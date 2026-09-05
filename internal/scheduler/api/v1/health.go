@@ -7,5 +7,5 @@ func Health(w http.ResponseWriter, r *http.Request) {
 }
 
 func Ready(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, []byte("ready"))
+	writeJSON(w, http.StatusOK, "ready")
 }

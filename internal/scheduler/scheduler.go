@@ -14,8 +14,8 @@ type Scheduler struct {
 	registry core.Registry
 }
 
-func NewScheduler() *Scheduler {
-	return &Scheduler{}
+func NewScheduler(store store.JobStore, registry core.Registry) *Scheduler {
+	return &Scheduler{store: store, registry: registry}
 }
 
 type JobSubmission struct {
@@ -42,4 +42,12 @@ func (s *Scheduler) Submit(job JobSubmission) error {
 		return fmt.Errorf("failed to submit job: %s", err)
 	}
 	return nil
+}
+
+type StatusUpdate struct {
+	Status core.Status `json:"status"`
+}
+
+func (s *Scheduler) UpdateStatus(id string, update StatusUpdate) (bool, error) {
+	return s.store.UpdateStatus(id, update.Status)
 }

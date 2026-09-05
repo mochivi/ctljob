@@ -18,12 +18,12 @@ const (
 	StatusClaimed   = "claimed"
 	StatusRunning   = "running"
 	StatusFailed    = "failed"
-	StatusSuccessed = "successed"
+	StatusCompleted = "completed"
 )
 
 func (s Status) Valid() bool {
 	switch s {
-	case StatusPending, StatusClaimed, StatusRunning, StatusFailed, StatusSuccessed:
+	case StatusPending, StatusClaimed, StatusRunning, StatusFailed, StatusCompleted:
 		return true
 	default:
 		return false
@@ -39,14 +39,18 @@ type Job struct {
 var transformations = map[Status][]Status{
 	StatusPending:   {StatusClaimed},
 	StatusClaimed:   {StatusRunning},
-	StatusRunning:   {StatusFailed, StatusSuccessed},
+	StatusRunning:   {StatusFailed, StatusCompleted},
 	StatusFailed:    {StatusPending},
-	StatusSuccessed: {},
+	StatusCompleted: {},
 }
 
 func (j *Job) UpdateStatus(new Status) error {
 	if !new.Valid() {
 		return ErrInvalidStatus
+	}
+
+	if new == j.Status {
+		return nil
 	}
 
 	if slices.Contains(transformations[j.Status], new) {
